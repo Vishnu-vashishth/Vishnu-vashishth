@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="152" viewBox="0 0 1000 152" role="img" aria-label="GitHub activity">
-<style>
-  .vl{font:400 34px Georgia,'Times New Roman',serif;fill:#ECEFF4}
-  .lb{font:500 10.5px ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;fill:#7E8794;letter-spacing:1.5px}
-  .sb{font:400 10.5px ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;fill:#7E8794;letter-spacing:.5px;opacity:.6}
-</style>
-<rect x=".5" y=".5" width="999" height="151" rx="12" fill="#0B0E14" stroke="#1C222C"/>
-<rect x="48" y="38" width="20" height="2" fill="#E8A33D" opacity=".9"/><text class="vl" x="48" y="76">1,707</text><text class="lb" x="48" y="99">CONTRIBUTIONS</text><text class="sb" x="48" y="117">past year</text><rect x="280" y="38" width="20" height="2" fill="#E8A33D" opacity=".9"/><text class="vl" x="280" y="76">686</text><text class="lb" x="280" y="99">PULL REQUESTS</text><text class="sb" x="280" y="117">all time</text><rect x="512" y="38" width="20" height="2" fill="#E8A33D" opacity=".9"/><text class="vl" x="512" y="76">509</text><text class="lb" x="512" y="99">CODE REVIEWS</text><text class="sb" x="512" y="117">past year</text><rect x="744" y="38" width="20" height="2" fill="#E8A33D" opacity=".9"/><text class="vl" x="744" y="76">48</text><text class="lb" x="744" y="99">REPOSITORIES</text><text class="sb" x="744" y="117">authored</text>
-</svg>

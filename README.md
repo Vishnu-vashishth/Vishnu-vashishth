@@ -1,56 +1,48 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/main/assets/header-dark.svg" />
-  <img alt="Vishnu Vashishth — backend engineer, distributed systems" src="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/main/assets/header-light.svg" width="100%" />
-</picture>
+<img alt="Vishnu Vashishth — backend engineer, distributed systems" width="100%" src="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/main/assets/header.svg" />
 
 <br/>
 
 I spend most of my time in the unglamorous half of the stack — the part that has to be correct at 3am.
 
-Lately that means **payment infrastructure**: idempotent checkout flows, provider webhooks that survive being delivered twice or not at all, subscription lifecycles that don't drift, and event delivery between services that can't afford to drop a message. Before that, a lot of Node, a lot of MongoDB query plans, and a real appreciation for observability that answers questions someone actually asked.
+Mostly that means **payment infrastructure** and the plumbing around a set of AI chat products: three microservices, fourteen shared libraries, and the migrations that keep years of message history honest. I care about the failure cases more than the happy path, because the happy path takes care of itself.
 
 <br/>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/main/assets/stats-dark.svg" />
-  <img alt="GitHub activity" src="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/main/assets/stats-light.svg" width="100%" />
-</picture>
+<img alt="GitHub activity" width="100%" src="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/main/assets/stats.svg" />
 
 <br/>
 
-## Currently
+## What I work on
 
-<details open>
-<summary><b>A payment service several products share</b></summary>
+### Payment platform
 
-<br/>
+One provider-agnostic service owns checkout for several products, rather than each product growing its own half-correct Stripe integration.
 
-Rather than letting each product grow its own half-correct Stripe integration, one provider-agnostic service owns checkout for all of them.
+Provider abstraction and registry with per-app configuration, so products differ as data and never as branches in the service. Webhook intake through API Gateway → Lambda → SQS for providers that notify exactly once. Idempotent settlement: a webhook delivered twice settles once, and one never delivered gets recovered. Subscription updates guarded against stale writes, and gRPC contracts between the service and the apps that consume it.
 
-- **One provider config, per-app plans** — products differ as data, never as branches in the service
-- **Idempotent settlement** — a webhook delivered twice settles once; a webhook never delivered gets recovered
-- **gRPC contracts** between the payment service and the apps that consume it
-- **Subscription lifecycles** — renewals, one-time-payment upgrades, grace periods
+### Telemetry and logging
 
-</details>
+A correlation id minted for every request rather than trusted from the caller, and request scope opened for every gRPC handler so a node's facts actually reach the log.
 
-<details>
-<summary><b>Backends for AI chat platforms</b></summary>
+Bounded JSON log fields that shed their largest value first, in linear time — a capped field stays parseable instead of being truncated mid-token, and a failed child keeps the context that explains it.
 
-<br/>
+### LLM infrastructure
 
-Character-driven chat products: conversation state, suggestion generation, prompt plumbing, and the migrations that keep years of message history honest — at a collection size where query plans stop being academic.
+Multi-provider routing where provider quirks are handled at the edge instead of assumed away: stop-sequence limits differ between OpenAI and Groq, so the limit is enforced per provider.
 
-</details>
+Bounded chat history per turn, prompt management shared across the generation services, and telemetry that records the sampling settings a failed call actually resolved to — not the ones it was asked for.
 
-<details>
-<summary><b>Observability that earns its keep</b></summary>
+### Async media pipeline
 
-<br/>
+Character image generation moved off the request path onto a BullMQ queue, and the image-generation service split out of the monolith into its own deployable, alongside text generation.
 
-Structured logs to Axiom, dashboards built around real questions, and feature flags so a rollout is a decision rather than a deploy.
+### Data recovery
 
-</details>
+Rebuilt a RocksDB whose `CURRENT` and `MANIFEST` were lost. Repaired a gap in a Delta change data feed. Reconstructed what reads of a PostgreSQL table returned during an incident.
+
+### Admin platform
+
+An admin API and panel for workflows, routes and engines, behind required admin auth.
 
 <br/>
 
@@ -59,9 +51,9 @@ Structured logs to Axiom, dashboards built around real questions, and feature fl
 |  |  |
 | :-- | :-- |
 | **Languages** | TypeScript · JavaScript · Python |
-| **Backend** | NestJS · Node.js · gRPC · Protocol Buffers |
+| **Backend** | NestJS · Node.js · gRPC · Protocol Buffers · BullMQ |
 | **Data** | MongoDB · Mongoose · Redis · Typesense |
-| **Cloud** | AWS — SQS, S3, KMS, Secrets Manager, Firehose · Docker |
+| **Cloud** | AWS — SQS, S3, KMS, Secrets Manager, Firehose, Lambda, API Gateway · Docker |
 | **Payments** | Stripe · PayPal |
 | **Tooling** | GitHub Actions · Jest · Axiom · GrowthBook |
 
@@ -80,8 +72,6 @@ Structured logs to Axiom, dashboards built around real questions, and feature fl
 </picture>
 
 -->
-
-<br/>
 
 ---
 

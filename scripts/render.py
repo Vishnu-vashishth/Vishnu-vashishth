@@ -1,16 +1,26 @@
 #!/usr/bin/env python3
-"""Render the profile's header and stats SVGs. One palette, two themes."""
+"""Render the profile's header and stats SVGs.
+
+One palette, one visual system: a terminal session. The design commits to a dark
+card, so there is no light variant — the card carries its own background and sits
+correctly on either GitHub theme.
+
+Everything is legible with animation stopped. Nothing starts at opacity 0, because
+GitHub's image proxy, link thumbnails and reduced-motion readers all paint the SVG
+at time zero, and anything invisible then is invisible for good.
+"""
 import json, os, sys, urllib.request, pathlib
 
 USER = "Vishnu-vashishth"
 OUT = pathlib.Path(__file__).resolve().parent.parent / "assets"
 
-THEMES = {
-    "dark":  dict(bg="#0B0E14", line="#1C222C", text="#ECEFF4", muted="#7E8794", accent="#E8A33D"),
-    "light": dict(bg="#FCFBF9", line="#E7E3DC", text="#14171A", muted="#6A7280", accent="#B8791A"),
-}
-SERIF = "Georgia,'Times New Roman',serif"
-MONO  = "ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace"
+MONO = "ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace"
+BG, BR, GRN, DIM, AMB, DEEP, TXT = (
+    "#060A07", "#13301F", "#4ADE80", "#5E9C78", "#FACC15", "#1F7A45", "#CFEBD9")
+
+# service, status, timing — the systems this profile actually describes
+LOGS = [("payment.webhook", "settled", "12ms"), ("grpc.checkout", "scope ok", "4ms"),
+        ("subscription", "renewed", "31ms"), ("telemetry.flush", "1.2k events", "")]
 
 QUERY = """query($login:String!){user(login:$login){
   contributionsCollection{totalPullRequestReviewContributions
@@ -36,67 +46,82 @@ def fetch():
     ]
 
 
-def header(t):
-    # service-topology motif: two tiers behind a gateway, pulsing like traffic
-    nodes = [(700,100,1),(778,66,0),(778,134,0),(856,100,1),(934,66,0),(934,134,0)]
-    edges = [(0,1),(0,2),(1,3),(2,3),(3,4),(3,5)]
-    e = "".join(
-        f'<line x1="{nodes[a][0]}" y1="{nodes[a][1]}" x2="{nodes[b][0]}" y2="{nodes[b][1]}"/>'
-        for a, b in edges)
-    n = "".join(
-        f'<circle class="n" style="animation-delay:{i*.45:.2f}s" cx="{x}" cy="{y}" r="4.5"'
-        f' fill="{t["accent"] if hub else t["bg"]}"/>'
-        for i, (x, y, hub) in enumerate(nodes))
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="200" viewBox="0 0 1000 200" role="img" aria-label="Vishnu Vashishth — backend engineer">
+CHROME = f'''<defs><pattern id="sc" width="4" height="4" patternUnits="userSpaceOnUse">
+<rect width="4" height="1.1" fill="#0D1F14" opacity=".55"/></pattern></defs>'''
+
+
+def header():
+    rows = (f'<text class="lgt" x="600" y="62" fill="{DEEP}" opacity=".75">~$ tail -f services.log</text>'
+            f'<rect class="scan" x="596" y="78" width="364" height="20" rx="4" fill="{GRN}" opacity=".06"/>')
+    for i, (svc, st, ms) in enumerate(LOGS):
+        y, d = 90 + i * 25, i * 0.42
+        rows += (f'<g><text class="ok tick" x="600" y="{y}" style="animation-delay:{d:.2f}s">✓</text>'
+                 f'<text class="lgt" x="622" y="{y}">{svc}</text>'
+                 f'<text class="ms" x="812" y="{y}">{st}</text>'
+                 f'<text class="lgt" x="918" y="{y}" opacity=".7">{ms}</text></g>')
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240" role="img" aria-label="Vishnu Vashishth — backend engineer, distributed systems">
+{CHROME}
 <style>
-  .nm{{font:400 42px {SERIF};fill:{t["text"]}}}
-  .rl{{font:500 13px {MONO};fill:{t["muted"]};letter-spacing:1.7px}}
-  .sk{{font:400 12px {MONO};fill:{t["muted"]};letter-spacing:1.1px;opacity:.72}}
-  .ed{{stroke:{t["accent"]};stroke-width:1.25;opacity:.26}}
-  .n{{stroke:{t["accent"]};stroke-width:1.5;animation:p 3.6s ease-in-out infinite}}
-  @keyframes p{{0%,100%{{opacity:.34}}50%{{opacity:1}}}}
+ .nm{{font:700 40px {MONO};fill:{GRN};letter-spacing:-1px}}
+ .pr{{font:700 40px {MONO};fill:{DEEP}}}
+ .rl{{font:500 12.5px {MONO};fill:{AMB};letter-spacing:2.2px}}
+ .sk{{font:400 11.5px {MONO};fill:{DIM};letter-spacing:1.2px}}
+ .lgt{{font:400 11px {MONO};fill:{DIM};letter-spacing:.4px}}
+ .ok{{font:400 11px {MONO};fill:{GRN}}}
+ .ms{{font:400 11px {MONO};fill:{AMB};opacity:.85}}
+ .cu{{fill:{GRN};animation:bl 1.05s steps(1) infinite}}
+ .tick{{animation:tk 3.4s ease-in-out infinite}}
+ .scan{{animation:sn 5.5s ease-in-out infinite}}
+ @keyframes bl{{0%,49%{{opacity:1}}50%,100%{{opacity:0}}}}
+ @keyframes tk{{0%,100%{{opacity:1}}50%{{opacity:.4}}}}
+ @keyframes sn{{0%,100%{{transform:translateY(0)}}50%{{transform:translateY(78px)}}}}
+ @media (prefers-reduced-motion:reduce){{*{{animation:none!important}}}}
 </style>
-<rect x=".5" y=".5" width="999" height="199" rx="12" fill="{t["bg"]}" stroke="{t["line"]}"/>
-<text class="nm" x="48" y="88">Vishnu Vashishth</text>
-<rect x="48" y="106" width="56" height="2.5" fill="{t["accent"]}"/>
-<text class="rl" x="48" y="137">BACKEND ENGINEER — DISTRIBUTED SYSTEMS</text>
-<text class="sk" x="48" y="162">TypeScript · NestJS · MongoDB · gRPC · AWS</text>
-<line x1="650" y1="52" x2="650" y2="148" stroke="{t["line"]}"/>
-<g class="ed">{e}</g><g>{n}</g>
-</svg>'''
+<rect width="1000" height="240" rx="14" fill="{BG}"/>
+<rect width="1000" height="240" rx="14" fill="url(#sc)"/>
+<rect x=".5" y=".5" width="999" height="239" rx="14" fill="none" stroke="{BR}"/>
+<text class="pr" x="52" y="102">~$</text>
+<text class="nm" x="112" y="102">vishnu-vashishth</text>
+<rect class="cu" x="507" y="74" width="15" height="34"/>
+<text class="rl" x="52" y="142">BACKEND ENGINEER :: DISTRIBUTED SYSTEMS</text>
+<text class="sk" x="52" y="170">payments · microservices · gRPC · AI infrastructure</text>
+{rows}</svg>'''
 
 
-def stats(t, data):
+def stats(data):
     cols = ""
     for i, (val, label, sub) in enumerate(data):
-        x = 48 + i * 232
-        cols += (
-            f'<rect x="{x}" y="38" width="20" height="2" fill="{t["accent"]}" opacity=".9"/>'
-            f'<text class="vl" x="{x}" y="76">{val:,}</text>'
-            f'<text class="lb" x="{x}" y="99">{label.upper()}</text>'
-            f'<text class="sb" x="{x}" y="117">{sub}</text>')
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="152" viewBox="0 0 1000 152" role="img" aria-label="GitHub activity">
+        x = 52 + i * 232
+        cols += (f'<text class="vl" x="{x}" y="104">{val:,}</text>'
+                 f'<text class="lb" x="{x}" y="127">{label.upper()}</text>'
+                 f'<text class="sb" x="{x}" y="145">{sub}</text>')
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="176" viewBox="0 0 1000 176" role="img" aria-label="GitHub activity">
+{CHROME}
 <style>
-  .vl{{font:400 34px {SERIF};fill:{t["text"]}}}
-  .lb{{font:500 10.5px {MONO};fill:{t["muted"]};letter-spacing:1.5px}}
-  .sb{{font:400 10.5px {MONO};fill:{t["muted"]};letter-spacing:.5px;opacity:.6}}
+ .pr{{font:500 13px {MONO};fill:{DEEP}}}
+ .cm{{font:500 13px {MONO};fill:{GRN}}}
+ .vl{{font:700 30px {MONO};fill:{AMB}}}
+ .lb{{font:500 10.5px {MONO};fill:{TXT};letter-spacing:1.5px;opacity:.75}}
+ .sb{{font:400 10.5px {MONO};fill:{DIM};letter-spacing:.5px;opacity:.75}}
 </style>
-<rect x=".5" y=".5" width="999" height="151" rx="12" fill="{t["bg"]}" stroke="{t["line"]}"/>
-{cols}
-</svg>'''
+<rect width="1000" height="176" rx="14" fill="{BG}"/>
+<rect width="1000" height="176" rx="14" fill="url(#sc)"/>
+<rect x=".5" y=".5" width="999" height="175" rx="14" fill="none" stroke="{BR}"/>
+<text class="pr" x="52" y="48">~$</text>
+<text class="cm" x="80" y="48">gh api graphql --activity</text>
+{cols}</svg>'''
 
 
 if __name__ == "__main__":
     d = fetch()
-    contributions = d[0][0]
-    if contributions < 100:
+    if d[0][0] < 100:
         sys.exit(
-            f"refusing to write: only {contributions} contributions visible.\n"
+            f"refusing to write: only {d[0][0]} contributions visible.\n"
             "The token cannot see this account's real activity, so rendering would\n"
             "overwrite correct numbers with near-zero ones. Set PROFILE_TOKEN to a\n"
             "PAT with read:user + repo, or skip the refresh."
         )
-    for name, t in THEMES.items():
-        (OUT / f"header-{name}.svg").write_text(header(t))
-        (OUT / f"stats-{name}.svg").write_text(stats(t, d))
+    OUT.mkdir(exist_ok=True)
+    (OUT / "header.svg").write_text(header())
+    (OUT / "stats.svg").write_text(stats(d))
     print("rendered:", ", ".join(sorted(p.name for p in OUT.glob("*.svg"))))
