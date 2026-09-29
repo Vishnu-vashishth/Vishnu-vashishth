@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Render the profile's header and stats SVGs. One palette, two themes."""
-import json, os, urllib.request, datetime, pathlib
+import json, os, sys, urllib.request, pathlib
 
 USER = "Vishnu-vashishth"
 OUT = pathlib.Path(__file__).resolve().parent.parent / "assets"
@@ -20,7 +20,7 @@ QUERY = """query($login:String!){user(login:$login){
 
 
 def fetch():
-    tok = os.environ["GITHUB_TOKEN"]
+    tok = os.environ.get("PROFILE_TOKEN") or os.environ["GITHUB_TOKEN"]
     req = urllib.request.Request(
         "https://api.github.com/graphql",
         data=json.dumps({"query": QUERY, "variables": {"login": USER}}).encode(),
@@ -75,22 +75,27 @@ def stats(t, data):
             f'<text class="vl" x="{x}" y="76">{val:,}</text>'
             f'<text class="lb" x="{x}" y="99">{label.upper()}</text>'
             f'<text class="sb" x="{x}" y="117">{sub}</text>')
-    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%d %b %Y").upper()
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="152" viewBox="0 0 1000 152" role="img" aria-label="GitHub activity">
 <style>
   .vl{{font:400 34px {SERIF};fill:{t["text"]}}}
   .lb{{font:500 10.5px {MONO};fill:{t["muted"]};letter-spacing:1.5px}}
   .sb{{font:400 10.5px {MONO};fill:{t["muted"]};letter-spacing:.5px;opacity:.6}}
-  .ts{{font:400 9.5px {MONO};fill:{t["muted"]};letter-spacing:1.2px;opacity:.45}}
 </style>
 <rect x=".5" y=".5" width="999" height="151" rx="12" fill="{t["bg"]}" stroke="{t["line"]}"/>
 {cols}
-<text class="ts" x="952" y="138" text-anchor="end">REFRESHED {stamp}</text>
 </svg>'''
 
 
 if __name__ == "__main__":
     d = fetch()
+    contributions = d[0][0]
+    if contributions < 100:
+        sys.exit(
+            f"refusing to write: only {contributions} contributions visible.\n"
+            "The token cannot see this account's real activity, so rendering would\n"
+            "overwrite correct numbers with near-zero ones. Set PROFILE_TOKEN to a\n"
+            "PAT with read:user + repo, or skip the refresh."
+        )
     for name, t in THEMES.items():
         (OUT / f"header-{name}.svg").write_text(header(t))
         (OUT / f"stats-{name}.svg").write_text(stats(t, d))

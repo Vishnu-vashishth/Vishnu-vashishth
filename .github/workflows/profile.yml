@@ -14,10 +14,14 @@ permissions:
 jobs:
   stats:
     runs-on: ubuntu-latest
+    # The default GITHUB_TOKEN only sees this repo, so it reports ~0 activity.
+    # Refresh only when a PAT with read:user + repo is configured.
+    if: false  # flip to: ${{ github.event_name != 'push' }} once PROFILE_TOKEN is set
     steps:
       - uses: actions/checkout@v4
       - name: Render header and stats SVGs
         env:
+          PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 scripts/render.py
       - name: Commit if changed

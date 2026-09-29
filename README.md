@@ -67,12 +67,19 @@ Structured logs to Axiom, dashboards built around real questions, and feature fl
 
 <br/>
 
+<!-- Contribution graph — hidden for now.
+     Your public contribution graph shows ~4 contributions, because the work lives in
+     private org repos. Turn on Settings → Public profile → "Include private
+     contributions on my profile", then delete these comment markers to show it.
+
 ## Contributions
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/output/github-snake-dark.svg" />
   <img alt="Contribution graph" src="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/output/github-snake.svg" width="100%" />
 </picture>
+
+-->
 
 <br/>
 
