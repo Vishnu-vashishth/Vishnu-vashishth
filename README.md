@@ -86,8 +86,15 @@ Before that: a lot of Node, a lot of MongoDB query plans, and a genuine apprecia
 
 <div align="center">
 
-<img height="165" src="https://github-readme-stats.vercel.app/api?username=Vishnu-vashishth&show_icons=true&include_all_commits=true&count_private=true&hide_border=true&border_radius=10&title_color=0ea5e9&icon_color=0ea5e9&text_color=9ca3af&bg_color=0d1117" alt="GitHub stats" />
-<img height="165" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Vishnu-vashishth&layout=compact&langs_count=8&hide_border=true&border_radius=10&title_color=0ea5e9&text_color=9ca3af&bg_color=0d1117" alt="Top languages" />
+<img width="88%" src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=Vishnu-vashishth&theme=github_dark" alt="Profile summary" />
+
+<img width="43%" src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=Vishnu-vashishth&theme=github_dark" alt="Languages by repo" />
+<img width="43%" src="https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=Vishnu-vashishth&theme=github_dark" alt="Languages by commit" />
+
+<img width="43%" src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=Vishnu-vashishth&theme=github_dark" alt="Stats" />
+<img width="43%" src="https://github-profile-summary-cards.vercel.app/api/cards/productive-time?username=Vishnu-vashishth&theme=github_dark&utcOffset=5.5" alt="Productive time" />
+
+<br/><br/>
 
 <img width="70%" src="https://streak-stats.demolab.com?user=Vishnu-vashishth&hide_border=true&border_radius=10&background=0d1117&stroke=0ea5e9&ring=0ea5e9&fire=ea4335&currStreakLabel=0ea5e9&sideLabels=9ca3af&dates=6b7280&sideNums=9ca3af&currStreakNum=ffffff" alt="Streak" />
 
@@ -135,12 +142,12 @@ Structured logs to Axiom, dashboards that answer questions someone actually aske
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/output/github-snake-dark.svg" />
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/output/github-snake.svg" />
-  <img alt="Contribution snake" src="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/output/github-snake.svg" />
+  <img width="98%" alt="Contribution snake" src="https://raw.githubusercontent.com/Vishnu-vashishth/Vishnu-vashishth/output/github-snake.svg" />
 </picture>
 
 <br/><br/>
 
-<img width="98%" src="https://github-readme-activity-graph.vercel.app/graph?username=Vishnu-vashishth&bg_color=0d1117&color=9ca3af&line=0ea5e9&point=ffffff&area=true&area_color=0ea5e9&hide_border=true&radius=8" alt="Activity graph" />
+<img width="88%" src="https://ghchart.rshah.org/0ea5e9/Vishnu-vashishth" alt="Contribution chart" />
 
 </div>
 
