@@ -1,0 +1,48 @@
+name: Refresh profile
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore: ["assets/**", "README.md"]
+
+permissions:
+  contents: write
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render header and stats SVGs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/render.py
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets
+          git diff --staged --quiet || git commit -m "Refresh profile stats"
+          git push
+
+  snake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate contribution graph
+        uses: Platane/snk@v3
+        id: snake
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/github-snake.svg?color_snake=%23B8791A&color_dots=%23EDEAE4,%23E3C79A,%23D0A65C,%23B8791A,%238A5712
+            dist/github-snake-dark.svg?color_snake=%23E8A33D&color_dots=%23161A22,%234A3410,%238A5E17,%23C5871F,%23E8A33D
+      - name: Push to output branch
+        uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
